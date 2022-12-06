@@ -9,10 +9,10 @@ class NewsRepository(
 ) {
     // Retrofit
     suspend fun getBreakingNews(domains: String, country: String, pageNumber: Int) =
-        RetrofitInstance.api.getBreakingNews(domains, pageNumber)
+        RetrofitInstance.api.getBreakingNews(domains)
 
     suspend fun searchNews(domains: String, searchQuery: String, pageNumber: Int) =
-        RetrofitInstance.api.searchNews(domains, searchQuery, pageNumber)
+        RetrofitInstance.api.searchNews(domains, searchQuery)
 
     // Room
     suspend fun upsert(article: Article) = db.getArticleDao().upsert(article)

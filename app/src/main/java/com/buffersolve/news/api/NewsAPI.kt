@@ -1,7 +1,8 @@
 package com.buffersolve.news.api
 
 import com.buffersolve.news.models.NewsResponse
-import com.buffersolve.news.util.Constants.Companion.API_KEY
+//import com.buffersolve.news.util.Constants.Companion.API_KEY
+import com.buffersolve.news.util.Constants.Companion.API_KEY_RESERVE_2
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -17,11 +18,11 @@ interface NewsAPI {
 //        @Query("country")
 //        countryCode: String,
 
-        @Query("page")
-        pageNumber: Int = 1,
+//        @Query("page")
+//        pageNumber: Int = 1,
 
         @Query("apiKey")
-        apiKey: String = API_KEY
+        apiKey: String = API_KEY_RESERVE_2
 
     ) : Response<NewsResponse>
 
@@ -34,11 +35,11 @@ interface NewsAPI {
         @Query("q")
         searchQuery: String,
 
-        @Query("page")
-        pageNumber: Int = 1,
+//        @Query("page")
+//        pageNumber: Int = 1,
 
         @Query("apiKey")
-        apiKey: String = API_KEY
+        apiKey: String = API_KEY_RESERVE_2
 
     ) : Response<NewsResponse>
 
