@@ -15,6 +15,7 @@ import com.buffersolve.news.adapters.NewsAdapter
 import com.buffersolve.news.databinding.FragmentSearchNewsBinding
 import com.buffersolve.news.ui.NewsActivity
 import com.buffersolve.news.ui.NewsViewModel
+import com.buffersolve.news.util.Constants.Companion.DOMAINS
 import com.buffersolve.news.util.Constants.Companion.SEARCH_NEWS_TIME_DELAY
 import com.buffersolve.news.util.Resource
 import kotlinx.coroutines.Job
@@ -56,7 +57,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
                 delay(SEARCH_NEWS_TIME_DELAY)
                 editable?.let {
                     if (editable.toString().isNotEmpty()) {
-                        viewModel.searchNews(editable.toString())
+                        viewModel.searchNews(DOMAINS, editable.toString())
                     }
                 }
             }

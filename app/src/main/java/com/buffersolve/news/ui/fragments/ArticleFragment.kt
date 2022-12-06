@@ -3,6 +3,7 @@ package com.buffersolve.news.ui.fragments
 import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -49,19 +50,24 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         viewModel = (activity as NewsActivity).viewModel
         article = args.article
 
+        binding.tvHead.text = article.title
+        binding.tvDate.text = article.publishedAt
+        binding.tvUrl.text = article.url
+
         // Init Fun Parse HTML
         viewModel.parseHTML(article)
 
         // Live Data Observer
         viewModel.parsedText.observe(viewLifecycleOwner, Observer {
-            binding.tv.text = it
+            binding.tvText.text = it
         })
 
         Log.d("URL11", article.url)
 
         // Justify Text
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            binding.tv.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+//            binding.tvHead?.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+            binding.tvText.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
         }
 
         // Img
@@ -76,6 +82,11 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
 
     private fun setToolBar() {
         requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                menu.findItem(R.id.app_bar_search).isVisible = false
+            }
+
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.tool_bar_menu, menu)
             }

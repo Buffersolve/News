@@ -28,6 +28,9 @@ interface NewsAPI {
     @GET("/v2/everything")
     suspend fun searchNews(
 
+        @Query("domains")
+        domains: String,
+
         @Query("q")
         searchQuery: String,
 

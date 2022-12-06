@@ -9,6 +9,7 @@ import com.buffersolve.news.models.NewsResponse
 import com.buffersolve.news.repository.NewsRepository
 import com.buffersolve.news.util.Constants.Companion.COUNTRY
 import com.buffersolve.news.util.Constants.Companion.DOMAINS
+import com.buffersolve.news.util.Constants.Companion.ELEMENT_ATTR_MATCH
 import com.buffersolve.news.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -36,13 +37,13 @@ class NewsViewModel(
     // Coroutine ViewModel Scopes
     fun getBreakingNews(domains: String) = viewModelScope.launch {
         breakingNews.postValue(Resource.Loading())
-        val response = newsRepository.getBreakingNews(domains = domains, pageNumber = breakingNewsPage)
+        val response = newsRepository.getBreakingNews(domains = domains, country = COUNTRY,  pageNumber = breakingNewsPage)
         breakingNews.postValue(handleBreakingNewsResponse(response))
     }
 
-    fun searchNews(searchQuery: String) = viewModelScope.launch {
+    fun searchNews(domains: String, searchQuery: String) = viewModelScope.launch {
         searchNews.postValue(Resource.Loading())
-        val response = newsRepository.searchNews(searchQuery, searchNewsPage)
+        val response = newsRepository.searchNews(domains, searchQuery, searchNewsPage)
         searchNews.postValue(handleSearchNewsResponse(response))
     }
 
@@ -73,7 +74,8 @@ class NewsViewModel(
     // Parse
     private fun parse (article: Article): String {
             val doc: Document = Jsoup.connect(article.url).get()
-            return doc.getElementsByAttributeValue("class", "paragraph inline-placeholder").text()
+            return doc.getElementsByAttributeValueContaining("class", ELEMENT_ATTR_MATCH).text()
+//            return doc.getElementsByTag("p").text()
     }
 
     // Save Article
