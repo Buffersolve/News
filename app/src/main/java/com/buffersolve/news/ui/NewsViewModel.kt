@@ -3,17 +3,15 @@ package com.buffersolve.news.ui
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
-import android.os.Build
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.buffersolve.news.NewsApplication
 import com.buffersolve.news.models.Article
 import com.buffersolve.news.models.NewsResponse
 import com.buffersolve.news.repository.NewsRepository
-import com.buffersolve.news.util.Constants.Companion.COUNTRY
 import com.buffersolve.news.util.Constants.Companion.DOMAINS
 import com.buffersolve.news.util.Constants.Companion.ELEMENT_ATTR_MATCH
 import com.buffersolve.news.util.Resource
@@ -26,23 +24,29 @@ import java.io.IOException
 
 class NewsViewModel(
     app: Application,
+    domains: String = DOMAINS,
     private val newsRepository: NewsRepository
 ) : AndroidViewModel(app) {
 
-    val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
-    var breakingNewsPage = 1
+    // Live Data
+    private val _breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
+    val breakingNews: LiveData<Resource<NewsResponse>>
+        get() = _breakingNews
 
-    val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
-    var searchNewsPage = 1
+    private val _searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
+    val searchNews: LiveData<Resource<NewsResponse>>
+        get() = _searchNews
 
-    val parsedText: MutableLiveData<String> = MutableLiveData()
+    private val _parsedText: MutableLiveData<String> = MutableLiveData()
+    val parsedText: LiveData<String>
+        get() = _parsedText
 
     init {
-        getBreakingNews(DOMAINS)
+        getBreakingNews(domains)
     }
 
     // Coroutine ViewModel Scopes
-    fun getBreakingNews(domains: String) = viewModelScope.launch {
+    private fun getBreakingNews(domains: String) = viewModelScope.launch {
         safeBreakingNewsCall(domains)
     }
 
@@ -51,7 +55,7 @@ class NewsViewModel(
     }
 
     fun parseHTML(article: Article) = viewModelScope.launch (Dispatchers.IO) {
-        parsedText.postValue(parse(article))
+        _parsedText.postValue(parse(article))
     }
 
     // Breaking Fragment Get function
@@ -99,36 +103,36 @@ class NewsViewModel(
 
     // Save Call
     private suspend fun safeBreakingNewsCall (domains: String) {
-        breakingNews.postValue(Resource.Loading())
+        _breakingNews.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = newsRepository.getBreakingNews(domains = domains, country = COUNTRY,  pageNumber = breakingNewsPage)
-                breakingNews.postValue(handleBreakingNewsResponse(response))
+                val response = newsRepository.getBreakingNews(domains)
+                _breakingNews.postValue(handleBreakingNewsResponse(response))
             } else {
-                breakingNews.postValue(Resource.Error(message = "No internet connection"))
+                _breakingNews.postValue(Resource.Error(message = "No internet connection"))
             }
         } catch (t: Throwable) {
             when(t) {
-                is IOException -> breakingNews.postValue(Resource.Error(message = "Network Failure"))
-                else -> breakingNews.postValue(Resource.Error(message = "Conversion Error"))
+                is IOException -> _breakingNews.postValue(Resource.Error(message = "Network Failure"))
+                else -> _breakingNews.postValue(Resource.Error(message = "Conversion Error"))
             }
         }
     }
 
     // Search Save Call
     private suspend fun safeSearchNewsCall (domains: String, searchQuery: String) {
-        searchNews.postValue(Resource.Loading())
+        _searchNews.postValue(Resource.Loading())
         try {
             if (hasInternetConnection()) {
-                val response = newsRepository.searchNews(domains = domains, searchQuery = searchQuery, pageNumber = searchNewsPage)
-                searchNews.postValue(handleSearchNewsResponse(response))
+                val response = newsRepository.searchNews(domains, searchQuery)
+                _searchNews.postValue(handleSearchNewsResponse(response))
             } else {
-                searchNews.postValue(Resource.Error(message = "No internet connection"))
+                _searchNews.postValue(Resource.Error(message = "No internet connection"))
             }
         } catch (t: Throwable) {
             when(t) {
-                is IOException -> searchNews.postValue(Resource.Error(message = "Network Failure"))
-                else -> searchNews.postValue(Resource.Error(message = "Conversion Error"))
+                is IOException -> _searchNews.postValue(Resource.Error(message = "Network Failure"))
+                else -> _searchNews.postValue(Resource.Error(message = "Conversion Error"))
             }
         }
     }

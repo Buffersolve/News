@@ -14,7 +14,6 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.FragmentArticleBinding
@@ -41,7 +40,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentArticleBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -65,9 +64,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         // Img
         Glide.with(this).load(article.urlToImage).into(binding.imageView)
 
-        val animSlideDown = AnimationUtils.loadAnimation(activity, R.anim.slide_down)
         val animMoveToLeft = AnimationUtils.loadAnimation(activity, R.anim.move_to_left)
-        val animMoveToLeftLong = AnimationUtils.loadAnimation(activity, R.anim.move_to_left_long)
         val animSlideDownMoveLeft = AnimationUtils.loadAnimation(activity, R.anim.slide_down_move_left)
         val animMoveToUp = AnimationUtils.loadAnimation(activity, R.anim.move_to_up)
         binding.tvHead.startAnimation(animMoveToLeft)
@@ -76,14 +73,14 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         binding.tvDate.startAnimation(animMoveToUp)
 
         // Live Data Observer for parsed text
-        viewModel.parsedText.observe(viewLifecycleOwner, Observer {
+        viewModel.parsedText.observe(viewLifecycleOwner) {
             binding.tvText.text = it
-        })
+        }
 
         // Already exist LiveData Listener
-        viewModel.isArtAlreadySaved(article.url).observe(viewLifecycleOwner, Observer {
+        viewModel.isArtAlreadySaved(article.url).observe(viewLifecycleOwner) {
             checkCount = it
-        })
+        }
 
         Log.d("URL11", article.url)
 

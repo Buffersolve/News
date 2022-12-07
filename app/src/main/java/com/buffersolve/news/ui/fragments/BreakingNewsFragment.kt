@@ -7,7 +7,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.buffersolve.news.R
@@ -24,8 +23,6 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     private lateinit var viewModel: NewsViewModel
     private lateinit var newsAdapter: NewsAdapter
 
-    private val TAG = "BreakingNewsFragment"
-
     private var _binding: FragmentBreakingNewsBinding? = null
     private val binding get() = _binding!!
 
@@ -34,7 +31,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentBreakingNewsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -62,7 +59,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         binding.appBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
 
         // LiveData observe
-        viewModel.breakingNews.observe(viewLifecycleOwner, Observer { response ->
+        viewModel.breakingNews.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
                     hideProgressBar()
@@ -80,7 +77,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                     showProgressBar()
                 }
             }
-        })
+        }
     }
 
     // Progress Bar
@@ -145,9 +142,9 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     fun searchDataBase(domains: String, query: String) {
         viewModel.searchNews(domains, query)
 
-        viewModel.searchNews.observe(viewLifecycleOwner, Observer {
+        viewModel.searchNews.observe(viewLifecycleOwner) {
             newsAdapter.differ.submitList(it.data?.articles)
-        })
+        }
     }
 
     // Fragment onDestroyView

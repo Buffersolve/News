@@ -5,13 +5,13 @@ import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.models.Article
 
 class NewsRepository(
-    val db: ArticleDatabase
+    private val db: ArticleDatabase
 ) {
     // Retrofit
-    suspend fun getBreakingNews(domains: String, country: String, pageNumber: Int) =
+    suspend fun getBreakingNews(domains: String) =
         RetrofitInstance.api.getBreakingNews(domains)
 
-    suspend fun searchNews(domains: String, searchQuery: String, pageNumber: Int) =
+    suspend fun searchNews(domains: String, searchQuery: String) =
         RetrofitInstance.api.searchNews(domains, searchQuery)
 
     // Room

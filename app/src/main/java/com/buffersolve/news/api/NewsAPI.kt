@@ -15,12 +15,6 @@ interface NewsAPI {
         @Query("domains")
         domains: String,
 
-//        @Query("country")
-//        countryCode: String,
-
-//        @Query("page")
-//        pageNumber: Int = 1,
-
         @Query("apiKey")
         apiKey: String = API_KEY_RESERVE_2
 
@@ -34,9 +28,6 @@ interface NewsAPI {
 
         @Query("q")
         searchQuery: String,
-
-//        @Query("page")
-//        pageNumber: Int = 1,
 
         @Query("apiKey")
         apiKey: String = API_KEY_RESERVE_2

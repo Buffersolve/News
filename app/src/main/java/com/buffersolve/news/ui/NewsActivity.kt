@@ -2,10 +2,7 @@ package com.buffersolve.news.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.buffersolve.news.R
@@ -47,7 +44,5 @@ class NewsActivity : AppCompatActivity() {
         //Bottom Navigation View
         binding.bottomNavigationView.setupWithNavController(navController)
 
-
     }
-
 }

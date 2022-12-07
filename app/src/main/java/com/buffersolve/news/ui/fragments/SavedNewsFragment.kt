@@ -5,7 +5,6 @@ import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,8 +22,6 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
     lateinit var viewModel: NewsViewModel
     lateinit var newsAdapter: NewsAdapter
 
-    private val TAG = "SavedNewsFragment"
-
     private var _binding: FragmentSavedNewsBinding? = null
     private val binding get() = _binding!!
 
@@ -33,7 +30,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSavedNewsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -86,9 +83,9 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         }
 
         // update RV Live Data
-        viewModel.getSavedNews().observe(viewLifecycleOwner, Observer {
+        viewModel.getSavedNews().observe(viewLifecycleOwner) {
             newsAdapter.differ.submitList(it)
-        })
+        }
 
         // New Tool Bar Api
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
