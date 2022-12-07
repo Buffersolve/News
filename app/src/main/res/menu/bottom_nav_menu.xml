@@ -6,9 +6,6 @@
         android:icon="@drawable/ic_breaking_news" />
     <item android:id="@+id/savedNewsFragment"
         android:title="Saved News"
-        android:icon="@drawable/ic_star" />
-<!--    <item android:id="@+id/searchNewsFragment"-->
-<!--        android:title="Search News"-->
-<!--        android:icon="@drawable/ic_search" />-->
+        android:icon="@drawable/ic_star_full" />
 
 </menu>

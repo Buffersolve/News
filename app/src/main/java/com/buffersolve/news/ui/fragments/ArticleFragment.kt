@@ -1,17 +1,22 @@
 package com.buffersolve.news.ui.fragments
 
+import android.graphics.Color
 import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.core.view.MenuHost
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.FragmentArticleBinding
 import com.buffersolve.news.models.Article
@@ -30,13 +35,14 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
     private val binding get() = _binding!!
 
     lateinit var article: Article
+    var checkCount: Long = 0
 
     // Fragment onCreateView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentArticleBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,23 +55,41 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         viewModel = (activity as NewsActivity).viewModel
         article = args.article
 
+        binding.tvHead.text = article.title
+        binding.tvUrl.text = article.url
+        binding.tvDate.text = article.publishedAt
+        binding.progressBar.visibility = View.INVISIBLE
+
         // Init Fun Parse HTML
         viewModel.parseHTML(article)
 
-        // Live Data Observer
-        viewModel.parsedText.observe(viewLifecycleOwner, Observer {
-            binding.tv.text = it
-        })
+        // Img
+        Glide.with(this).load(article.urlToImage).into(binding.imageView)
+
+        val animMoveToLeft = AnimationUtils.loadAnimation(activity, R.anim.move_to_left)
+        val animSlideDownMoveLeft = AnimationUtils.loadAnimation(activity, R.anim.slide_down_move_left)
+        val animMoveToUp = AnimationUtils.loadAnimation(activity, R.anim.move_to_up)
+        binding.tvHead.startAnimation(animMoveToLeft)
+        binding.tvText.startAnimation(animSlideDownMoveLeft)
+        binding.tvUrl.startAnimation(animMoveToUp)
+        binding.tvDate.startAnimation(animMoveToUp)
+
+        // Live Data Observer for parsed text
+        viewModel.parsedText.observe(viewLifecycleOwner) {
+            binding.tvText.text = it
+        }
+
+        // Already exist LiveData Listener
+        viewModel.isArtAlreadySaved(article.url).observe(viewLifecycleOwner) {
+            checkCount = it
+        }
 
         Log.d("URL11", article.url)
 
         // Justify Text
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            binding.tv.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+            binding.tvText.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
         }
-
-        // Img
-        Glide.with(this).load(article.urlToImage).into(binding.imageView)
 
         // New Tool Bar Api
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
@@ -76,14 +100,48 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
 
     private fun setToolBar() {
         requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                menu.findItem(R.id.app_bar_search).isVisible = false
+            }
+
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.tool_bar_menu, menu)
+                // Color Icon
+                menu.findItem(R.id.app_bar_save).icon.colorFilter =
+                    BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        Color.YELLOW, BlendModeCompat.SRC_ATOP)
+
+                // Change Icon
+                if (checkCount > 0) {
+                    menu.findItem(R.id.app_bar_save).icon =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_full)
+//                    // Color Icon
+                    menu.findItem(R.id.app_bar_save).icon.colorFilter =
+                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            Color.YELLOW, BlendModeCompat.SRC_ATOP)
+
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 if (menuItem.itemId == R.id.app_bar_save) {
-                    viewModel.saveArticle(article)
-                    view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT).show() }
+                    //Check is article already exist
+                    if (checkCount > 0) {
+                        view?.let { Snackbar.make(it, "Already Exist", Snackbar.LENGTH_SHORT)
+                            .setAnchorView(R.id.bottomNavigationView).show() }
+                    } else {
+                        viewModel.saveArticle(article)
+                        view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT)
+                            .setAnchorView(R.id.bottomNavigationView).show() }
+
+                        menuItem.icon =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_full)
+
+                        menuItem.icon.colorFilter =
+                            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                                Color.YELLOW, BlendModeCompat.SRC_ATOP)
+                    }
                 }
                 return true
             }
@@ -91,18 +149,10 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-
     // Fragment onDestroyView
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    private fun toast(str: String) {
-        Toast.makeText(
-            requireContext(),
-            str,
-            Toast.LENGTH_SHORT).show()
     }
 
 }

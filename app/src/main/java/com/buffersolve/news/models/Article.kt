@@ -1,11 +1,16 @@
 package com.buffersolve.news.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
+
 
 @Entity (
     tableName = "articles"
         )
+@Parcelize
 data class Article(
     @PrimaryKey (autoGenerate = true)
     var id: Int? = null,
@@ -14,17 +19,8 @@ data class Article(
     val content: String,
     val description: String,
     val publishedAt: String,
-    val source: Source,
+//    val source: @RawValue Source? = null,
     val title: String,
     val url: String,
     val urlToImage: String
-) : java.io.Serializable {
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        if(url.isNullOrEmpty()){
-            result = 31 * result + url.hashCode()
-        }
-        return result
-    }
-}
+) : Parcelable

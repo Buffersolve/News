@@ -1,11 +1,10 @@
 package com.buffersolve.news.ui.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,17 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.buffersolve.news.R
 import com.buffersolve.news.adapters.NewsAdapter
 import com.buffersolve.news.databinding.FragmentSavedNewsBinding
-import com.buffersolve.news.databinding.FragmentSearchNewsBinding
 import com.buffersolve.news.ui.NewsActivity
 import com.buffersolve.news.ui.NewsViewModel
+import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 
 class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
 
     lateinit var viewModel: NewsViewModel
     lateinit var newsAdapter: NewsAdapter
-
-    private val TAG = "SavedNewsFragment"
 
     private var _binding: FragmentSavedNewsBinding? = null
     private val binding get() = _binding!!
@@ -33,7 +30,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSavedNewsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -47,7 +44,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         // Open Article
         newsAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putSerializable("article", it)
+                putParcelable("article", it)
             }
             findNavController().navigate(
                 R.id.action_savedNewsFragment_to_articleFragment,
@@ -56,7 +53,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         }
 
         // Swipe Delete
-        val itemToucHhelperCallBack = object : ItemTouchHelper.SimpleCallback(
+        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
@@ -72,7 +69,8 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
                 val position = viewHolder.adapterPosition
                 val article = newsAdapter.differ.currentList[position]
                 viewModel.deleteArticle(article)
-                Snackbar.make(view, "Article Deleted", Snackbar.LENGTH_SHORT).apply {
+                Snackbar.make(view, "Article Deleted", Snackbar.LENGTH_SHORT)
+                    .setAnchorView(R.id.bottomNavigationView).apply {
                     setAction("Undo") {
                         viewModel.saveArticle(article)
                     }
@@ -81,14 +79,19 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             }
         }
 
-        ItemTouchHelper(itemToucHhelperCallBack).apply {
+        ItemTouchHelper(itemTouchHelperCallBack).apply {
             attachToRecyclerView(binding.rvSavedNews)
         }
 
         // update RV Live Data
-        viewModel.getSavedNews().observe(viewLifecycleOwner, Observer {
+        viewModel.getSavedNews().observe(viewLifecycleOwner) {
             newsAdapter.differ.submitList(it)
-        })
+        }
+
+        // New Tool Bar Api
+        (activity as NewsActivity).setSupportActionBar(binding.toolBar)
+        setToolBar()
+        binding.appBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
 
     }
 
@@ -101,10 +104,29 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         }
     }
 
+    private fun setToolBar() {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                menu.findItem(R.id.app_bar_search).isVisible = false
+                menu.findItem(R.id.app_bar_save).isVisible = false
+            }
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.tool_bar_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return true
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     // Fragment onDestroyView
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
 }

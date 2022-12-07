@@ -1,3 +1,7 @@
 <resources>
+
     <string name="app_name">News</string>
+    <string name="hyperlink"> <a href="a">TheVerge</a> </string>
+    <string name="theverge">TheVerge</string>
+
 </resources>

@@ -2,10 +2,8 @@ package com.buffersolve.news.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.widget.Toolbar
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.buffersolve.news.R
@@ -14,6 +12,7 @@ import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.repository.NewsRepository
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.elevation.SurfaceColors
+import com.google.android.material.snackbar.Snackbar
 
 class NewsActivity : AppCompatActivity() {
 
@@ -33,17 +32,12 @@ class NewsActivity : AppCompatActivity() {
             setContentView(it.root)
         }
 
-        // App Bar
-//        setSupportActionBar(binding.toolBar)
-//        binding.toolBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
-
         //News Repository
         val newsRepository = NewsRepository(ArticleDatabase(this))
 
         // ViewModel
-        val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
-        viewModel = ViewModelProvider(this, viewModelProviderFactory)
-            .get(NewsViewModel::class.java)
+        val viewModelProviderFactory = NewsViewModelProviderFactory(application, newsRepository)
+        viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
 
         //Hav Host & Controller
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
@@ -52,15 +46,10 @@ class NewsActivity : AppCompatActivity() {
         //Bottom Navigation View
         binding.bottomNavigationView.setupWithNavController(navController)
 
-
+//        binding.bottomNavigationView.setOnItemReselectedListener {
+//            navController.popBackStack(it.itemId, true)
+//        }
 
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        super.onCreateOptionsMenu(menu)
-//        menuInflater.inflate(R.menu.tool_bar_menu, menu)
-//        return true
-//
-//    }
 
 }

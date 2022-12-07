@@ -1,53 +1,61 @@
 package com.buffersolve.news.ui
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Query
+import com.buffersolve.news.NewsApplication
 import com.buffersolve.news.models.Article
 import com.buffersolve.news.models.NewsResponse
 import com.buffersolve.news.repository.NewsRepository
-import com.buffersolve.news.util.Constants.Companion.COUNTRY
 import com.buffersolve.news.util.Constants.Companion.DOMAINS
+import com.buffersolve.news.util.Constants.Companion.ELEMENT_ATTR_MATCH
 import com.buffersolve.news.util.Resource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import retrofit2.Response
+import java.io.IOException
 
 class NewsViewModel(
-    val newsRepository: NewsRepository
-) : ViewModel() {
+    app: Application,
+    domains: String = DOMAINS,
+    private val newsRepository: NewsRepository
+) : AndroidViewModel(app) {
 
-    val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
-    var breakingNewsPage = 1
+    // Live Data
+    private val _breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
+    val breakingNews: LiveData<Resource<NewsResponse>>
+        get() = _breakingNews
 
-    val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
-    var searchNewsPage = 1
+    private val _searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
+    val searchNews: LiveData<Resource<NewsResponse>>
+        get() = _searchNews
 
-    val parsedText: MutableLiveData<String> = MutableLiveData()
+    private val _parsedText: MutableLiveData<String> = MutableLiveData()
+    val parsedText: LiveData<String>
+        get() = _parsedText
 
     init {
-        getBreakingNews(DOMAINS)
+        getBreakingNews(domains)
     }
 
     // Coroutine ViewModel Scopes
-    fun getBreakingNews(domains: String) = viewModelScope.launch {
-        breakingNews.postValue(Resource.Loading())
-        val response = newsRepository.getBreakingNews(domains = domains, pageNumber = breakingNewsPage)
-        breakingNews.postValue(handleBreakingNewsResponse(response))
+    private fun getBreakingNews(domains: String) = viewModelScope.launch {
+        safeBreakingNewsCall(domains)
     }
 
-    fun searchNews(searchQuery: String) = viewModelScope.launch {
-        searchNews.postValue(Resource.Loading())
-        val response = newsRepository.searchNews(searchQuery, searchNewsPage)
-        searchNews.postValue(handleSearchNewsResponse(response))
+    fun searchNews(domains: String, searchQuery: String) = viewModelScope.launch {
+        safeSearchNewsCall(domains, searchQuery)
     }
 
     fun parseHTML(article: Article) = viewModelScope.launch (Dispatchers.IO) {
-        parsedText.postValue(parse(article))
+        _parsedText.postValue(parse(article))
     }
 
     // Breaking Fragment Get function
@@ -73,7 +81,7 @@ class NewsViewModel(
     // Parse
     private fun parse (article: Article): String {
             val doc: Document = Jsoup.connect(article.url).get()
-            return doc.getElementsByAttributeValue("class", "paragraph inline-placeholder").text()
+            return doc.getElementsByAttributeValueContaining("class", ELEMENT_ATTR_MATCH).text()
     }
 
     // Save Article
@@ -87,6 +95,61 @@ class NewsViewModel(
     // Delete Article
     fun deleteArticle(article: Article) = viewModelScope.launch {
         newsRepository.deleteArticle(article)
+    }
+
+    // Check isArtAlreadySaved
+    fun isArtAlreadySaved(article: String) = newsRepository.isArtAlreadySaved(article)
+
+    // Save Call
+    private suspend fun safeBreakingNewsCall (domains: String) {
+        _breakingNews.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()) {
+                val response = newsRepository.getBreakingNews(domains)
+                _breakingNews.postValue(handleBreakingNewsResponse(response))
+            } else {
+                _breakingNews.postValue(Resource.Error(message = "No internet connection"))
+            }
+        } catch (t: Throwable) {
+            when(t) {
+                is IOException -> _breakingNews.postValue(Resource.Error(message = "Network Failure"))
+                else -> _breakingNews.postValue(Resource.Error(message = "Conversion Error"))
+            }
+        }
+    }
+
+    // Search Save Call
+    private suspend fun safeSearchNewsCall (domains: String, searchQuery: String) {
+        _searchNews.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()) {
+                val response = newsRepository.searchNews(domains, searchQuery)
+                _searchNews.postValue(handleSearchNewsResponse(response))
+            } else {
+                _searchNews.postValue(Resource.Error(message = "No internet connection"))
+            }
+        } catch (t: Throwable) {
+            when(t) {
+                is IOException -> _searchNews.postValue(Resource.Error(message = "Network Failure"))
+                else -> _searchNews.postValue(Resource.Error(message = "Conversion Error"))
+            }
+        }
+    }
+
+    // Check Internet Connection
+    private fun hasInternetConnection() : Boolean {
+        val connectivityManager = getApplication<NewsApplication>().getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return when {
+            capabilities.hasTransport(TRANSPORT_WIFI) -> true
+            capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
+            capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
     }
 
 }
