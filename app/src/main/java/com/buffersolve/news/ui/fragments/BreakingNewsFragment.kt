@@ -17,6 +17,7 @@ import com.buffersolve.news.ui.NewsViewModel
 import com.buffersolve.news.util.Constants.Companion.DOMAINS
 import com.buffersolve.news.util.Resource
 import com.google.android.material.elevation.SurfaceColors
+import com.google.android.material.snackbar.Snackbar
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
@@ -70,7 +71,9 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 is Resource.Error -> {
                     hideProgressBar()
                     response.message?.let { message ->
-                        Toast.makeText(activity, "Error: $message", Toast.LENGTH_LONG).show()
+                        Snackbar.make(view, "Error: $message", Snackbar.LENGTH_LONG)
+                            .setAnchorView(R.id.bottomNavigationView).show()
+                        binding.textInternet.visibility = View.VISIBLE
                     }
                 }
                 is Resource.Loading -> {

@@ -12,9 +12,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.FragmentArticleBinding
 import com.buffersolve.news.models.Article
@@ -126,10 +128,13 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
                 if (menuItem.itemId == R.id.app_bar_save) {
                     //Check is article already exist
                     if (checkCount > 0) {
-                        Toast.makeText(requireContext(), "Already Exist", Toast.LENGTH_SHORT).show()
+                        view?.let { Snackbar.make(it, "Already Exist", Snackbar.LENGTH_SHORT)
+                            .setAnchorView(R.id.bottomNavigationView).show() }
                     } else {
                         viewModel.saveArticle(article)
-                        view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT).show() }
+                        view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT)
+                            .setAnchorView(R.id.bottomNavigationView).show() }
+
                         menuItem.icon =
                             ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_full)
 

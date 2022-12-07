@@ -82,7 +82,6 @@ class NewsViewModel(
     private fun parse (article: Article): String {
             val doc: Document = Jsoup.connect(article.url).get()
             return doc.getElementsByAttributeValueContaining("class", ELEMENT_ATTR_MATCH).text()
-//            return doc.getElementsByTag("p").text()
     }
 
     // Save Article

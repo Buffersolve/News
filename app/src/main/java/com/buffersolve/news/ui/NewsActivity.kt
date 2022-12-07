@@ -2,6 +2,7 @@ package com.buffersolve.news.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -11,6 +12,7 @@ import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.repository.NewsRepository
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.elevation.SurfaceColors
+import com.google.android.material.snackbar.Snackbar
 
 class NewsActivity : AppCompatActivity() {
 
@@ -44,5 +46,10 @@ class NewsActivity : AppCompatActivity() {
         //Bottom Navigation View
         binding.bottomNavigationView.setupWithNavController(navController)
 
+//        binding.bottomNavigationView.setOnItemReselectedListener {
+//            navController.popBackStack(it.itemId, true)
+//        }
+
     }
+
 }
