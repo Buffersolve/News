@@ -15,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.FragmentArticleBinding
@@ -97,8 +96,6 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
         setToolBar()
         binding.appBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
-
-//        findNavController().popBackStack()
 
     }
 

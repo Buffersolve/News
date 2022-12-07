@@ -1,7 +1,6 @@
 package com.buffersolve.news.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -55,10 +54,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 R.id.action_breakingNewsFragment_to_articleFragment,
                 bundle
             )
-//            findNavController().popBackStack()
         }
-
-
 
         // Tool Bar
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
@@ -136,7 +132,6 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                         return true
                     }
                 })
-
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
