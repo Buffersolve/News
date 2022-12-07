@@ -1,12 +1,9 @@
 package com.buffersolve.news.ui.fragments
 
-import android.graphics.BlendModeColorFilter
 import android.graphics.Color
-import android.graphics.ColorFilter
 import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Bundle
-import android.provider.CalendarContract.Colors
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
@@ -18,6 +15,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.FragmentArticleBinding
@@ -25,7 +23,6 @@ import com.buffersolve.news.models.Article
 import com.buffersolve.news.ui.NewsActivity
 import com.buffersolve.news.ui.NewsViewModel
 import com.bumptech.glide.Glide
-import com.google.android.material.color.DynamicColors
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 
@@ -73,10 +70,11 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         val animMoveToLeft = AnimationUtils.loadAnimation(activity, R.anim.move_to_left)
         val animMoveToLeftLong = AnimationUtils.loadAnimation(activity, R.anim.move_to_left_long)
         val animSlideDownMoveLeft = AnimationUtils.loadAnimation(activity, R.anim.slide_down_move_left)
+        val animMoveToUp = AnimationUtils.loadAnimation(activity, R.anim.move_to_up)
         binding.tvHead.startAnimation(animMoveToLeft)
         binding.tvText.startAnimation(animSlideDownMoveLeft)
-        binding.tvUrl.startAnimation(animMoveToLeftLong)
-        binding.tvDate.startAnimation(animMoveToLeftLong)
+        binding.tvUrl.startAnimation(animMoveToUp)
+        binding.tvDate.startAnimation(animMoveToUp)
 
         // Live Data Observer for parsed text
         viewModel.parsedText.observe(viewLifecycleOwner, Observer {
@@ -99,6 +97,8 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
         setToolBar()
         binding.appBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
+
+//        findNavController().popBackStack()
 
     }
 

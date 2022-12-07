@@ -47,7 +47,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         // Open Article
         newsAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putSerializable("article", it)
+                putParcelable("article", it)
             }
             findNavController().navigate(
                 R.id.action_savedNewsFragment_to_articleFragment,
@@ -56,7 +56,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         }
 
         // Swipe Delete
-        val itemToucHhelperCallBack = object : ItemTouchHelper.SimpleCallback(
+        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
@@ -81,7 +81,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             }
         }
 
-        ItemTouchHelper(itemToucHhelperCallBack).apply {
+        ItemTouchHelper(itemTouchHelperCallBack).apply {
             attachToRecyclerView(binding.rvSavedNews)
         }
 
@@ -119,16 +119,11 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                if (menuItem.itemId == R.id.app_bar_save) {
-//                    viewModel.saveArticle(article)
-                    view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT).show() }
-                }
                 return true
             }
 
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
-
 
     // Fragment onDestroyView
     override fun onDestroyView() {
