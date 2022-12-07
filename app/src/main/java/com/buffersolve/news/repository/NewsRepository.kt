@@ -21,4 +21,6 @@ class NewsRepository(
 
     suspend fun deleteArticle(article: Article) = db.getArticleDao().deleteArticle(article)
 
+    fun isArtAlreadySaved(articleUrl: String) = db.getArticleDao().isArtAlreadySaved(articleUrl)
+
 }

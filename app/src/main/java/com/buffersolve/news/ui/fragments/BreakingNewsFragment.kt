@@ -22,8 +22,8 @@ import com.google.android.material.elevation.SurfaceColors
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
-    lateinit var viewModel: NewsViewModel
-    lateinit var newsAdapter: NewsAdapter
+    private lateinit var viewModel: NewsViewModel
+    private lateinit var newsAdapter: NewsAdapter
 
     private val TAG = "BreakingNewsFragment"
 
@@ -56,6 +56,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 bundle
             )
         }
+
+
 
         // Tool Bar
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
@@ -150,16 +152,12 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         viewModel.searchNews.observe(viewLifecycleOwner, Observer {
             newsAdapter.differ.submitList(it.data?.articles)
         })
-
     }
-
 
     // Fragment onDestroyView
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 
 }

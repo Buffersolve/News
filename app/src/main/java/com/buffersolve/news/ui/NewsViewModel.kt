@@ -8,9 +8,7 @@ import android.net.NetworkCapabilities.*
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Query
 import com.buffersolve.news.NewsApplication
 import com.buffersolve.news.models.Article
 import com.buffersolve.news.models.NewsResponse
@@ -20,7 +18,6 @@ import com.buffersolve.news.util.Constants.Companion.DOMAINS
 import com.buffersolve.news.util.Constants.Companion.ELEMENT_ATTR_MATCH
 import com.buffersolve.news.util.Resource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -29,7 +26,7 @@ import java.io.IOException
 
 class NewsViewModel(
     app: Application,
-    val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository
 ) : AndroidViewModel(app) {
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
@@ -97,6 +94,9 @@ class NewsViewModel(
         newsRepository.deleteArticle(article)
     }
 
+    // Check isArtAlreadySaved
+    fun isArtAlreadySaved(article: String) = newsRepository.isArtAlreadySaved(article)
+
     // Save Call
     private suspend fun safeBreakingNewsCall (domains: String) {
         breakingNews.postValue(Resource.Loading())
@@ -139,26 +139,14 @@ class NewsViewModel(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetwork = connectivityManager.activeNetwork ?: return false
-            val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-            return when {
-                capabilities.hasTransport(TRANSPORT_WIFI) -> true
-                capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
-                capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
-        } else {
-            connectivityManager.activeNetworkInfo?.run {
-                return when(type) {
-                    TYPE_WIFI -> true
-                    TYPE_MOBILE -> true
-                    TYPE_ETHERNET -> true
-                    else -> false
-                }
-            }
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return when {
+            capabilities.hasTransport(TRANSPORT_WIFI) -> true
+            capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
+            capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
+            else -> false
         }
-        return false
     }
 
 }

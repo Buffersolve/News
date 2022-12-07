@@ -1,10 +1,10 @@
 package com.buffersolve.news.ui.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.buffersolve.news.R
 import com.buffersolve.news.adapters.NewsAdapter
 import com.buffersolve.news.databinding.FragmentSavedNewsBinding
-import com.buffersolve.news.databinding.FragmentSearchNewsBinding
 import com.buffersolve.news.ui.NewsActivity
 import com.buffersolve.news.ui.NewsViewModel
+import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 
 class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
@@ -90,6 +90,11 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             newsAdapter.differ.submitList(it)
         })
 
+        // New Tool Bar Api
+        (activity as NewsActivity).setSupportActionBar(binding.toolBar)
+        setToolBar()
+        binding.appBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
+
     }
 
     // RV Setup
@@ -101,10 +106,34 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         }
     }
 
+    private fun setToolBar() {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                menu.findItem(R.id.app_bar_search).isVisible = false
+                menu.findItem(R.id.app_bar_save).isVisible = false
+            }
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.tool_bar_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (menuItem.itemId == R.id.app_bar_save) {
+//                    viewModel.saveArticle(article)
+                    view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT).show() }
+                }
+                return true
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+
     // Fragment onDestroyView
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
 }
