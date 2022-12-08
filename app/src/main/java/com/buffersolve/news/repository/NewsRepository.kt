@@ -3,6 +3,7 @@ package com.buffersolve.news.repository
 import com.buffersolve.news.api.RetrofitInstance
 import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.models.Article
+import retrofit2.http.Url
 
 class NewsRepository(
     private val db: ArticleDatabase
@@ -19,7 +20,7 @@ class NewsRepository(
 
     fun gatSavedNews() = db.getArticleDao().getAllArticles()
 
-    suspend fun deleteArticle(article: Article) = db.getArticleDao().deleteArticle(article)
+    suspend fun deleteArticle(articleUrl: String) = db.getArticleDao().deleteArticle(articleUrl)
 
     fun isArtAlreadySaved(articleUrl: String) = db.getArticleDao().isArtAlreadySaved(articleUrl)
 

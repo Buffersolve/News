@@ -2,9 +2,10 @@ package com.buffersolve.news.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.NavigationUiSaveStateControl
 import androidx.navigation.ui.setupWithNavController
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.ActivityNewsBinding
@@ -12,13 +13,13 @@ import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.repository.NewsRepository
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.elevation.SurfaceColors
-import com.google.android.material.snackbar.Snackbar
 
 class NewsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNewsBinding
     lateinit var viewModel: NewsViewModel
 
+    @NavigationUiSaveStateControl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,10 +47,10 @@ class NewsActivity : AppCompatActivity() {
         //Bottom Navigation View
         binding.bottomNavigationView.setupWithNavController(navController)
 
-//        binding.bottomNavigationView.setOnItemReselectedListener {
-//            navController.popBackStack(it.itemId, true)
-//        }
-
+        binding.bottomNavigationView.setOnItemSelectedListener {
+            NavigationUI.onNavDestinationSelected(it, navController, false)
+            true
+        }
     }
 
 }

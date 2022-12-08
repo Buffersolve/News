@@ -2,6 +2,7 @@ package com.buffersolve.news.ui.fragments
 
 import android.os.Bundle
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider

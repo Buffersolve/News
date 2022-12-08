@@ -68,7 +68,16 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val article = newsAdapter.differ.currentList[position]
-                viewModel.deleteArticle(article)
+
+                // Delete
+                viewModel.deleteArticle(article.url)
+
+                // Monkey
+                if (newsAdapter.differ.currentList.size == 1) {
+                    binding.monkey.visibility = View.VISIBLE
+                    binding.monkey.imageAlpha = 80
+                }
+
                 Snackbar.make(view, "Article Deleted", Snackbar.LENGTH_SHORT)
                     .setAnchorView(R.id.bottomNavigationView).apply {
                     setAction("Undo") {
@@ -83,9 +92,16 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             attachToRecyclerView(binding.rvSavedNews)
         }
 
-        // update RV Live Data
+        // Update RV Live Data
         viewModel.getSavedNews().observe(viewLifecycleOwner) {
             newsAdapter.differ.submitList(it)
+
+            // Monkey
+            if (newsAdapter.differ.currentList.isEmpty()) {
+                binding.monkey.visibility = View.VISIBLE
+                binding.monkey.imageAlpha = 80
+            }
+
         }
 
         // New Tool Bar Api

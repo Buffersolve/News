@@ -6,7 +6,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -17,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.buffersolve.news.R
 import com.buffersolve.news.databinding.FragmentArticleBinding
 import com.buffersolve.news.models.Article
@@ -95,6 +98,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         (activity as NewsActivity).setSupportActionBar(binding.toolBar)
         setToolBar()
         binding.appBar.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
+        binding.toolBar.title = article.title
 
     }
 
@@ -112,7 +116,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
                     BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                         Color.YELLOW, BlendModeCompat.SRC_ATOP)
 
-                // Change Icon
+//                 Change Icon
                 if (checkCount > 0) {
                     menu.findItem(R.id.app_bar_save).icon =
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_full)
@@ -128,10 +132,25 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
                 if (menuItem.itemId == R.id.app_bar_save) {
                     //Check is article already exist
                     if (checkCount > 0) {
-                        view?.let { Snackbar.make(it, "Already Exist", Snackbar.LENGTH_SHORT)
+//                        val position = RecyclerView.
+//                        val article = newsAdapter.differ.currentList[position]
+                        viewModel.deleteArticle(article.url)
+                        checkCount--
+
+                        view?.let { Snackbar.make(it, "Article Deleted", Snackbar.LENGTH_SHORT)
                             .setAnchorView(R.id.bottomNavigationView).show() }
+
+                        menuItem.icon =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_star)
+
+                        menuItem.icon.colorFilter =
+                            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                                Color.YELLOW, BlendModeCompat.SRC_ATOP)
                     } else {
+
                         viewModel.saveArticle(article)
+                        checkCount++
+
                         view?.let { Snackbar.make(it, "Article Saved", Snackbar.LENGTH_SHORT)
                             .setAnchorView(R.id.bottomNavigationView).show() }
 
