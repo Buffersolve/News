@@ -36,6 +36,8 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:src="@drawable/animated_monkey"
+        android:alpha="0.5"
+        android:contentDescription="@string/monkey"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

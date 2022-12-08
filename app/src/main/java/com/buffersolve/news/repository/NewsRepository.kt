@@ -3,7 +3,6 @@ package com.buffersolve.news.repository
 import com.buffersolve.news.api.RetrofitInstance
 import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.models.Article
-import retrofit2.http.Url
 
 class NewsRepository(
     private val db: ArticleDatabase

@@ -25,9 +25,10 @@
                 android:id="@+id/ivArticleImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:contentDescription="cover"
+                android:contentDescription="@string/cover"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_launcher"
+                tools:ignore="ImageContrastCheck" />
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -36,7 +37,7 @@
                 android:layout_margin="8dp"
                 android:ellipsize="end"
                 android:maxLines="3"
-                android:text="TITLE"
+                android:text="@string/title"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 

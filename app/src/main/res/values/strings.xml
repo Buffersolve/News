@@ -4,5 +4,12 @@
     <string name="hyperlink"> <a href="a">TheVerge</a> </string>
     <string name="theverge">TheVerge</string>
     <string name="no_internet_connection">No Internet Connection</string>
+    <string name="head">Head</string>
+    <string name="date">Date</string>
+    <string name="cover">cover</string>
+    <string name="title">TITLE</string>
+    <string name="monkey">Monkey</string>
+    <string name="search">Search</string>
+    <string name="save">Save</string>
 
 </resources>

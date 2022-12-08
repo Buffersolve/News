@@ -52,6 +52,11 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             )
         }
 
+        // Monkey
+        if (newsAdapter.differ.currentList.isEmpty()) {
+            binding.monkey.visibility = View.VISIBLE
+        }
+
         // Swipe Delete
         val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
@@ -73,18 +78,17 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
                 viewModel.deleteArticle(article.url)
 
                 // Monkey
-                if (newsAdapter.differ.currentList.size == 1) {
+                if (newsAdapter.differ.currentList.size > 0) {
                     binding.monkey.visibility = View.VISIBLE
-                    binding.monkey.imageAlpha = 80
                 }
 
                 Snackbar.make(view, "Article Deleted", Snackbar.LENGTH_SHORT)
                     .setAnchorView(R.id.bottomNavigationView).apply {
-                    setAction("Undo") {
-                        viewModel.saveArticle(article)
+                        setAction("Undo") {
+                            viewModel.saveArticle(article)
+                        }
+                        show()
                     }
-                    show()
-                }
             }
         }
 
@@ -96,10 +100,8 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         viewModel.getSavedNews().observe(viewLifecycleOwner) {
             newsAdapter.differ.submitList(it)
 
-            // Monkey
-            if (newsAdapter.differ.currentList.isEmpty()) {
-                binding.monkey.visibility = View.VISIBLE
-                binding.monkey.imageAlpha = 80
+            if (it.isNotEmpty()) {
+                binding.monkey.visibility = View.INVISIBLE
             }
 
         }
