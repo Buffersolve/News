@@ -4,15 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import com.buffersolve.news.models.Article
 
 @Database (
     entities = [Article::class],
     version = 4,
-    exportSchema = false
-        )
-@TypeConverters(Converters::class)
+    exportSchema = false )
 abstract class ArticleDatabase : RoomDatabase() {
 
     abstract fun getArticleDao(): ArticleDao

@@ -52,6 +52,11 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             )
         }
 
+        // Monkey
+        if (newsAdapter.differ.currentList.isEmpty()) {
+            binding.monkey.visibility = View.VISIBLE
+        }
+
         // Swipe Delete
         val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
@@ -68,14 +73,22 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val article = newsAdapter.differ.currentList[position]
-                viewModel.deleteArticle(article)
+
+                // Delete
+                viewModel.deleteArticle(article.url)
+
+                // Monkey
+                if (newsAdapter.differ.currentList.size > 0) {
+                    binding.monkey.visibility = View.VISIBLE
+                }
+
                 Snackbar.make(view, "Article Deleted", Snackbar.LENGTH_SHORT)
                     .setAnchorView(R.id.bottomNavigationView).apply {
-                    setAction("Undo") {
-                        viewModel.saveArticle(article)
+                        setAction("Undo") {
+                            viewModel.saveArticle(article)
+                        }
+                        show()
                     }
-                    show()
-                }
             }
         }
 
@@ -83,9 +96,14 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             attachToRecyclerView(binding.rvSavedNews)
         }
 
-        // update RV Live Data
+        // Update RV Live Data
         viewModel.getSavedNews().observe(viewLifecycleOwner) {
             newsAdapter.differ.submitList(it)
+
+            if (it.isNotEmpty()) {
+                binding.monkey.visibility = View.INVISIBLE
+            }
+
         }
 
         // New Tool Bar Api

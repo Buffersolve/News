@@ -93,8 +93,8 @@ class NewsViewModel(
     fun getSavedNews() = newsRepository.gatSavedNews()
 
     // Delete Article
-    fun deleteArticle(article: Article) = viewModelScope.launch {
-        newsRepository.deleteArticle(article)
+    fun deleteArticle(articleUrl: String) = viewModelScope.launch {
+        newsRepository.deleteArticle(articleUrl)
     }
 
     // Check isArtAlreadySaved

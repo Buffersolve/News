@@ -2,7 +2,6 @@ package com.buffersolve.news.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -17,8 +16,8 @@ interface ArticleDao {
     @Query("SELECT * FROM articles")
     fun getAllArticles(): LiveData<List<Article>>
 
-    @Delete
-    suspend fun deleteArticle(article: Article)
+    @Query("DELETE FROM articles WHERE url = :articleUrl")
+    suspend fun deleteArticle(articleUrl: String)
 
     @Query("SELECT COUNT(*) FROM articles WHERE url = :artUrl")
     fun isArtAlreadySaved(artUrl: String) : LiveData<Long>

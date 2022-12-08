@@ -17,7 +17,8 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/tool_bar_menu"/>
+            app:title="Breaking News"
+            app:menu="@menu/tool_bar_menu" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -47,7 +48,7 @@
 
     <TextView
         android:id="@+id/textInternet"
-        android:text="No Internet Connection"
+        android:text="@string/no_internet_connection"
         android:visibility="invisible"
         android:textStyle="bold"
         android:textSize="25sp"
