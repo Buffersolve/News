@@ -46,7 +46,7 @@ class NewsViewModel(
     }
 
     // Coroutine ViewModel Scopes
-    private fun getBreakingNews(domains: String) = viewModelScope.launch {
+    fun getBreakingNews(domains: String) = viewModelScope.launch {
         safeBreakingNewsCall(domains)
     }
 

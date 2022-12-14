@@ -4,7 +4,7 @@ import com.buffersolve.news.api.RetrofitInstance
 import com.buffersolve.news.db.ArticleDatabase
 import com.buffersolve.news.models.Article
 
-class NewsRepository(
+open class NewsRepository(
     private val db: ArticleDatabase
 ) {
     // Retrofit

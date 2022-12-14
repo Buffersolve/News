@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
