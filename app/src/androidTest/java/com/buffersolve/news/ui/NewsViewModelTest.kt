@@ -42,7 +42,7 @@ class NewsViewModelTest {
 //        val domains = DOMAINS
 //        val viewModel = NewsViewModel(app, DOMAINS, newsRepository)
 
-        val a = viewModel.getBreakingNews(domains).children
+//        val a = viewModel.getBreakingNews(domains).children
 
 
     }
